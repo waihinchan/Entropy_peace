@@ -137,8 +137,7 @@ socket.on('gamestatus',function(data){//这个是游戏的房间状态 比如说
       gen_money();//同时开始算钱 感觉时间会有一些不同步 不管了
       clearInterval(tempcd);
       mycamera.remove(daojishi);
-      sound.play();
-      console.log('sound should play');
+
     }, 3000);
     //这个是游戏开始倒计时的GUI 不写成函数了 这样也很直观
   }
@@ -237,6 +236,8 @@ function scene_init() {
     sound.setLoop( false );
     sound.setVolume( 0.5 );
     console.log('sound load');
+    sound.play();
+    console.log('sound should play');
   });
  //sound
   animate();
