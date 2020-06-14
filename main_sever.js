@@ -4,7 +4,7 @@ var eventEmitter = new events.EventEmitter();
 const bodyParser = require('body-parser');
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = process.env.PORT||3000;
 const server = app.listen(port,function(){
     console.log('listen on req to port ' + port);
 });
