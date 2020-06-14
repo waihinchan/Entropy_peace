@@ -163,7 +163,7 @@ socket.on('gamestatus',function(data){//这个是游戏的房间状态 比如说
     bg.style.backgroundColor = 'black';
     var alllose = document.createElement('p');
     bg.appendChild(alllose);
-    alllose.textContent = `${JSON.stringify(data.moneyrank)}`;
+    alllose.textContent = `Do not go gentle into that good night ${JSON.stringify(data.moneyrank)}`;
     alllose.style.fontSize = '10px';
     alllose.style.color = 'rgb(255, 255,255)';
     var endmsg = new CSS2DObject(bg);
