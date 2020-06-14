@@ -1,0 +1,37 @@
+
+@font-face{
+    font-family:"Pixelar Regular W01 Regular";
+    src:url("Fonts/1428314/4d8bd4f0-ce40-4f34-a0b8-49bc51024ea8.woff2") format("woff2"),url("Fonts/1428314/9c200a14-d264-405c-86bf-d27b840e86be.woff") format("woff");
+}
+/* 这个部分是主页的 */
+.column {
+    float: left;
+    width: 50%;
+    margin-top: 25%;
+    transform: translateY(-50%);
+    /* text-align: center; */
+  }
+.column>*{
+    position:absolute;
+    top:50%;
+    left:25%;
+    transform: translateY(-50%);
+}
+ /* 边框我统一用了一样的 因为显示效果不太好也看不出来 */
+#room_req_input >input[type=text]{
+    border-image:url(/asset/input边框1.png);
+    border-image-slice: 10;
+    border-image-repeat: stretch;
+  }
+#room_req_input >input[type=number]{
+    border-image:url(/asset/input边框1.png);
+    border-image-slice: 10;
+    border-image-repeat: stretch;
+}
+ /* 边框我统一用了一样的 因为显示效果不太好也看不出来 */
+/* 这个部分是主页的 */
+/* 这个部分是公用的 */
+body{
+    font-family:"Pixelar Regular W01 Regular";
+}
+/* 这个部分是公用的 */
