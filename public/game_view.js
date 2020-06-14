@@ -597,11 +597,12 @@ function updateGUI(){//这个迟早要优化的 目前还有一个创建gui房�
       thisplayer.textContent = `${severmsg.moneyrank[i].player_name}: ${severmsg.moneyrank[i].money}`;
     }
   }
+
   var lefthp = document.getElementById('hp');
-  lefthp.textContent =`${severmsg.hp}/1000 hp left`; 
+  lefthp.textContent =`${severmsg.hp}/${severmsg.moneyrank.length*500} hp left`; //这里要改成服务器能用的
   lefthp.style.textAlign = 'center';
   var hpbar = document.getElementById('total_hp_bar');
-  hpbar.style.width = `${(severmsg.hp / 1000 * 100 | 0)*0.5}%`;
+  hpbar.style.width = `${(severmsg.hp / (severmsg.moneyrank.length*500) * 100 | 0)*0.5}%`;
   var time_left = document.getElementById('timeleft');
   time_left.textContent = `${severmsg.time_left/1000} sec left` ;
 
