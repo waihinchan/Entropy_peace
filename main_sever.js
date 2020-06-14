@@ -15,7 +15,7 @@ io = socketio(server);
 //—————————————————————————————————————————————————————————————— express part
 app.use(bodyParser()); 
 //static file
-app.use(express.static('public'));
+app.use(express.static(__dirname+'/public'));
 
 app.get('/homepage',function(req,res){
     res.sendFile(__dirname+'/index.html');
@@ -77,7 +77,7 @@ app.post('/gamepage',function(req,res){
         let amount = room_message.player_amount;
         let newmyroom = new MyRoom(room_name,amount);
         rooms.push(newmyroom);
-        res.render(__dirname+'/ejstest.ejs',{data:room_message}); 
+        res.render(__dirname+'/gamepage.ejs',{data:room_message}); 
         //这个带参的游戏页面用于在新游戏页面客户端发起socketio请求;
     }
     else{
@@ -89,7 +89,7 @@ app.post('/gamepage',function(req,res){
         else{
             console.log('ceshi');
             console.log(thismyroom);
-            res.render(__dirname+'/ejstest.ejs',{data:room_message}); 
+            res.render(__dirname+'/gamepage.ejs',{data:room_message}); 
             //这个带参的游戏页面用于在新游戏页面客户端发起socketio请求;
         }
     }
