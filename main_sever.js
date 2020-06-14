@@ -118,12 +118,11 @@ class MyRoom extends EventEmitter{//继承了事件监听器类
         this.player_amount = player_amount;
         this.gameover = false;//符合胜利条件才算
         this.gamestart = false;//凑够4个或指定数量的玩家才算 最少要2个 看connection状态或者在游戏里面给一个ready的状态吧
-        this.init_hp = 100;//这个是初始生命值
+        this.init_hp = 500*player_amount;//这个是初始生命值
         this.current_unit_pollution = 0;
         this.players = [];//这个用于储存所有的player类
         this.playersid = [];
-        // this.starttime = 10*60*1000;//这个单位到时候再想，看看是分钟还是秒。
-        this.starttime = 10*1000;
+        this.starttime = 10*60*1000;//这个单位到时候再想，看看是分钟还是秒。
         this.moneyrank = [];
         this.dingshiqi;//这个定时器是为了结束后停用这个定时器 是一些函数封装的问题 具体忘记了 但是把定时器写在类里面必须通过变量来赋值
     }
@@ -285,7 +284,7 @@ function destoryroom(the_room){
     roomsid[this_index] = null;
     rooms.splice(this_index);//这个可能不一定需要
     roomsid.splice(this_index);//这个可能不一定需要 因为我不太知道那个删除元素的逻辑
-    console.log('test room still there' + rooms[this_index] + 'test room id still there' + roomsid[this_index]);
+    // console.log('test room still there' + rooms[this_index] + 'test room id still there' + roomsid[this_index]);
 }
 
 ///////////////////////////////////////////////////////////////////
