@@ -110,7 +110,9 @@ var animate = function () {
 
 
 //通讯
-const socket = io.connect('http://localhost:3000');
+// const socket = io.connect('http://localhost:3000');
+// const socket = io.connect(`https://entropypeace.herokuapp.com:${process.env.PORT}`||'http://localhost:3000');
+const socket = io.connect(`https://entropypeace.herokuapp.com`||'http://localhost:3000');
 
 socket.on('connect',function(){//这个是当你初始链接后马上返回的信息 同时让玩家加入
   console.log('connected to the sever');
