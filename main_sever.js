@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const app = express();
 const port = 3000;
-const server = app.listen(port,function(){
+const server = app.listen(process.env.PORT || 5000,function(){
     console.log('listen on req to port ' + port);
 });
 //—————————————————————————————————————————————————————————————— socket io part
