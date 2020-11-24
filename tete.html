@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div style = "position:absolute;right:0%;">
+        <button id = 1级 style=" float:left; border-color: 10%;" >按我</button>
+        <div id = '2级' style="display: none; float:left;">
+            <!-- <div >diudiudiudiu</div>
+            <div >diudiudiudiu</div>
+            <div >diudiudiudiu</div>
+            <div >diudiudiudiu</div> -->
+            ha
+        </div>
+         
+    </div>
+        
+    <script>
+        var but = document.getElementById('1级');
+        var thisthis = document.getElementById('2级');
+        var out = false;
+        but.addEventListener('click',function(){
+            if(out){
+            thisthis.style.display = 'block';
+        }
+        else{
+            thisthis.style.display = 'none';
+        }
+        out = !out;
+        })
+    </script>
+
+</body>
+</html>

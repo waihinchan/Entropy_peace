@@ -28,7 +28,7 @@ const msgtables = { //这个有个问题是归属的问题 但是的确是写在
   perpollution:{url:'',textContent:'0 '+ 'per sec',type:'p'},
   timeleft:{url:'',textContent:'10min'+' left',type:'p'},//这里到时候要一个ejs模版
   collectgold:{url:'',textContent:'collectmoney',type:'button',myfun:collect_money},//这里到时候要一个ejs模版
-}
+} 
 // 这个是模型表
 const models = {
   //这个url到时候要做一个请求 不能直接放在公用文件夹
@@ -37,23 +37,31 @@ const models = {
   Purify: {url:'/model/purify.obj',mtl_url:'/model/purify.mtl',name:'Purify',pollution:-1,production:-1,cost:5,src:'/asset/purify_icon.png'},
   Ground:    { url: '/model/棋盘3.obj' , mtl_url: '/model/棋盘3.mtl',name:'Ground',src:''}
 };
-const gltfmodels = {
-  Planet:{url : '/model/scene2.gltf'}
+
+const gltfmodels = { //这个如果很丑不想要后面就删屌
+  Planet:{url : '/model/scene_ulti.gltf'}
 }
 
 const scene = new THREE.Scene();
+//场景初始化
 scene.background = 1;
+//场景背景色
 if(debug){
   let axesHelper = new THREE.AxesHelper( 250 );
   scene.add( axesHelper );
 }
 const mycamera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 5000 );
+//相机
 var listener = new THREE.AudioListener();
 var sound = new THREE.Audio( listener );
-var raycaster = new THREE.Raycaster();//这个是射线 给我们的鼠标交互用的
+//音乐 后面把它删掉 为了保证没有bug
+var raycaster = new THREE.Raycaster();
+//这个是射线 给我们的鼠标交互用的
 var mouse = new THREE.Vector2();
-var mygroup = new THREE.Group();//这个用来存建筑名 本来想改名字 但是只有一个组就算了 太麻烦了
+var mygroup = new THREE.Group();
+//这个用来存建筑名 本来想改名字 但是只有一个组就算了 太麻烦了
 var atm_light = new THREE.DirectionalLight( 0xF5F5F5,5);
+//这个是游戏结束时的灯
 const manager = new THREE.LoadingManager();
 const myOBJLoader = new OBJLoader.OBJLoader(manager);//模型加载器
 const myMTLLoader = new MTLLoader.MTLLoader(manager);//材质文件加载器
@@ -61,25 +69,36 @@ const progressbarElem = document.querySelector('#progressbar');
 manager.onProgress = (url, itemsLoaded, itemsTotal) => {
   progressbarElem.style.width = `${itemsLoaded / itemsTotal * 100 | 0}%`;
 };
+//这个应该是loading界面的条 运行的没啥毛病不管了
+
 manager.onLoad = scene_init;
+// ********************************** //
 const renderer = new THREE.WebGLRenderer();
-renderer.setSize(innerWidth, innerHeight);//设置渲染区域尺寸 //渲染尺寸或许可以不做那么大的
-renderer.setClearColor(0xAAAAAA, 1); //设置背景颜色 //这个也可以改一下
+renderer.setSize(innerWidth, innerHeight);
+renderer.setClearColor(0xAAAAAA, 1); //设置背景颜色
 document.body.appendChild(renderer.domElement); //这个尺寸有点问题 后面看看是不是用容器来渲
+//设置渲染区域尺寸.这个是一个问题..如果解决了canvas的问题可能就不需要搞这么多复杂的东西了
+// ********************************** //
+
 const labelRenderer = new CSS2DRenderer();
+//这个是GUI的渲染器
 labelRenderer.setSize( window.innerWidth, window.innerHeight );
+//这里设置了全屏幕的有点迷啊
+
 labelRenderer.domElement.style.position = 'absolute';
 labelRenderer.domElement.style.top = '0px';
+//这个部分可以DEBUG试试要看看
+
 document.body.appendChild( labelRenderer.domElement );
 var orbit = new OrbitControls( mycamera, labelRenderer.domElement );
-
+loadmodel();//load model 可以先进行
 //初始设置 全局变量
 
 var animate = function () {
   requestAnimationFrame( animate );
   orbit.update();
-  var Planet = scene.getObjectByName('Scene').getObjectByName('快乐星球最终版gltf');
-  Planet.rotation.y += 0.001;
+  // var Planet = scene.getObjectByName('Scene').getObjectByName('快乐星球最终版gltf');
+  // Planet.rotation.y += 0.001;
   renderer.render( scene, mycamera );
   labelRenderer.render( scene, mycamera );
   if(gameover){
@@ -87,24 +106,23 @@ var animate = function () {
   }
 };
 //运行程序 main藏在init里面了
-loadmodel();//load model 可以先进行
+
 
 
 //通讯
-// const port = process.env.PORT||3000;
-const socket = io.connect(`https://entropypeace.herokuapp.com`||'http://localhost:3000');
+const socket = io.connect('http://localhost:3000');
 
 socket.on('connect',function(){//这个是当你初始链接后马上返回的信息 同时让玩家加入
   console.log('connected to the sever');
-  result.unique_id = socket.id;
-  send_room_req(result);
+  result.unique_id = socket.id; //这个是玩家唯一的ID
+  send_room_req(result); //这个result是ejs里面给的..这么写有点傻逼以后改一下
   console.log(result);
 });
 
 
 socket.on('update_room_status',function(data){//这个是游戏运行中的房间信息
   severmsg = null;
-  severmsg = JSON.parse(JSON.stringify(data));
+  severmsg = JSON.parse(JSON.stringify(data));//把来自服务器的信息修改一下
   if(debug){
     console.log('接收到了');
     console.log(data);
@@ -114,47 +132,52 @@ socket.on('update_room_status',function(data){//这个是游戏运行中的房�
 
 });
 
-socket.on('gamestatus',function(data){//这个是游戏的房间状态 比如说开始 新人加入 等等
+socket.on('gamestatus',function(data){
+  //这个是游戏的房间状态 比如说开始 新人加入 游戏结束 等等
   console.log(data);
   if(data.game_status == 'start'){//也可以用once来写 但是这样还不如直接这么写
     console.log('game start after 3s');
+
     var countdown = document.createElement('p');
     var daojishi = new CSS2DObject(countdown);
     countdown.textContent = '3';
     countdown.style.pollution = 'absolute';
     daojishi.position.set(0,3,-10);
     mycamera.add(daojishi);
-    // countdown.id = 'dao';//这个好像没用
     var timeleft = 3;
     var tempcd = setInterval(function(){
       timeleft--;
       countdown.textContent = timeleft;
     }, 1000);
     setTimeout(() => {//接收到gamestart之后 三秒后可以开始操作
-      gamestart = true;
-      GUI_interact();
-      currentgold = data.moneyrank[0].money;
-      gen_money();//同时开始算钱 感觉时间会有一些不同步 不管了
-      clearInterval(tempcd);
-      mycamera.remove(daojishi);
-
+      clearInterval(tempcd);//不用在计数了
+      // updateGUI();
+      gamestart = true; //游戏开始的状态看看后面会影响什么
+      GUI_interact(); //这个是GUI可以开始交互了
+      currentgold = data.moneyrank[0].money;//这个现有金钱是来自于服务器给的 一开始大家都一样是直接从某一位数取
+      gen_money();//这个是计算金钱的函数
+      mycamera.remove(daojishi);//remove应该也没有问题 反正就不会显示了
+      sound.play();//这个音乐如果不同步就tm不播放了
     }, 3000);
     //这个是游戏开始倒计时的GUI 不写成函数了 这样也很直观
   }
-  else if(data.game_status == 'all lose!'){//这里需要加一些提示界面 同时让requestframe变暗 同时还要处理一个排序的问题
+  else if(data.game_status == 'all lose!'){
+    //这里需要加一些提示界面 同时让requestframe变暗 同时还要处理一个排序的问题
     updateGUI();
     gameover = true; //这里还要发送结束的东西
-    var bg = document.createElement('div');
-    bg.id = 'bg';
-    bg.style.backgroundColor = 'black';
-    var alllose = document.createElement('p');
-    bg.appendChild(alllose);
-    alllose.textContent = 'These violent delights have violent ends';
-    alllose.style.fontSize = '50px';
-    alllose.style.color = 'rgb(255, 255,255)';
-    var endmsg = new CSS2DObject(bg);
-    endmsg.position.set(0,2,-10);
-    mycamera.add(endmsg);
+    // 这个部分我先关掉了...
+    // var bg = document.createElement('div');
+    // bg.id = 'bg';
+    // bg.style.backgroundColor = 'black';
+    // var alllose = document.createElement('p');
+    // bg.appendChild(alllose);
+    // alllose.textContent = 'These violent delights have violent ends';
+    // alllose.style.fontSize = '50px';
+    // alllose.style.color = 'rgb(255, 255,255)';
+    // var endmsg = new CSS2DObject(bg);
+    // endmsg.position.set(0,2,-10);
+    // mycamera.add(endmsg);
+    // 这个部分我先关掉了...
   }
   else{
     updateGUI();
@@ -164,13 +187,12 @@ socket.on('gamestatus',function(data){//这个是游戏的房间状态 比如说
     bg.style.backgroundColor = 'black';
     var alllose = document.createElement('p');
     bg.appendChild(alllose);
-    alllose.textContent = `Do not go gentle into that good night ${JSON.stringify(data.moneyrank)}`;
+    alllose.textContent = `${JSON.stringify(data.moneyrank)}`;
     alllose.style.fontSize = '10px';
     alllose.style.color = 'rgb(255, 255,255)';
     var endmsg = new CSS2DObject(bg);
     endmsg.position.set(0,2,-10);
     mycamera.add(endmsg);
-    
   }
   
   console.log('now this room is '+ data.game_status);
@@ -179,14 +201,7 @@ socket.on('gamestatus',function(data){//这个是游戏的房间状态 比如说
 function send_room_req(init_room_message){//这个函数是在连接到socketio之后马上把房间号信息发送到服务器
   socket.emit('room_req',init_room_message);
 }
-function sortrank(a,b){
-  if(a<b){
-    return b;
-  }
-  else{
-    return a;
-  }
-}
+
 //通讯
 
 //运行程序 main藏在init里面了
@@ -198,7 +213,7 @@ function sortrank(a,b){
 function scene_init() {
   // hide the loading bar
   const loadingElem = document.querySelector('#loading');
-  loadingElem.style.display = 'none';//加载条样式后面记得要修改
+  loadingElem.style.display = 'none';
   //地板
   var myground = mygroup.getObjectByName ( "Ground" ); //地板不是工厂类
   myground.children[0].geometry.computeBoundingBox();//计算了我才知道它的长宽高
@@ -235,64 +250,12 @@ function scene_init() {
     sound.setBuffer( buffer );
     sound.setLoop( false );
     sound.setVolume( 0.5 );
-    console.log('sound load');
-    sound.play();
-    console.log('sound should play');
+    
   });
  //sound
   animate();
   
   
-}
-
-function loadmodel(){
-  for (const model of Object.values(models)) {
-    //这个写法不太好 有些异步加载的问题
-    // myMTLLoader.load(model.mtl_url,function(materials){
-    //   var thismaterials = materials;
-    //   myOBJLoader.setMaterials(thismaterials);
-    //   myOBJLoader.load(model.url,function(obj){
-    //     obj.name = model.name;
-    //     obj.children[0].geometry.computeBoundingBox();
-    //     obj.children[0].geometry.center();
-    //     obj.position.set(0,obj.children[0].geometry.boundingBox.max.y,0);
-    //     if(debug){
-    //     var helper = new THREE.BoxHelper(obj);
-    //     helper.update();
-    //     scene.add(helper);}
-    //     mygroup.add(obj);
-    //     // scene.add(mygroup);
-    //     console.log(obj);
-    //   })
-    // })
-    //这个写法不太好
-    new MTLLoader.MTLLoader( manager )
-    .load( model.mtl_url, function ( materials ) {
-      console.log(materials);
-      materials.preload();
-
-      new OBJLoader.OBJLoader( manager )
-        .setMaterials( materials )
-        .load( model.url, function ( obj ) {
-        console.log(obj);
-        obj.name = model.name;
-        obj.children[0].geometry.computeBoundingBox();
-        obj.children[0].geometry.center();
-        obj.position.set(0,obj.children[0].geometry.boundingBox.max.y,0);
-        mygroup.add(obj);
-        // scene.add(obj);
-        });
-
-    } );
-  }
-  for (const gltfmodel of Object.values(gltfmodels)) {//这里可能要一个一个加载?
-    new GLTFLoader.GLTFLoader(manager)
-    .load(gltfmodel.url,function(gltf){
-      scene.add( gltf.scene );
-      console.log(scene);
-      
-    });
-  }
 }
 
 
@@ -401,7 +364,7 @@ function createGUI(models){//用模型列表来生成gui 这个逻辑其实还�
     if(model.name!='Ground'){
       let sourcenode = document.getElementById('for_clone');
       let clonenode = sourcenode.cloneNode(true);
-      clonenode.style.display = 'block';
+      clonenode.style.display = 'inline';
       let unit_name = clonenode.querySelector('#unit_name');
       unit_name.textContent = model.name;
       unit_name.style.textAlign = 'center';
@@ -424,7 +387,7 @@ function createGUI(models){//用模型列表来生成gui 这个逻辑其实还�
     let left_menu = new CSS2DObject( building_menu );
     
     // left_menu.position.set( 0,5,5);
-    left_menu.position.set( -12,0,-10);
+    left_menu.position.set( -10,0,-10);
     mycamera.add(left_menu);
     // scene.add(mycamera);
   }
@@ -447,7 +410,7 @@ function createGUI(models){//用模型列表来生成gui 这个逻辑其实还�
     //这里的样式问题 需要在css里面搞一下 这里就不搞了
   }
   var top_menu = new CSS2DObject( msg_menu );
-  top_menu.position.set(12,5,-10);//位置暂时放在了右侧
+  top_menu.position.set(10,5,-10);//位置暂时放在了右侧
   mycamera.add(top_menu);
   // scene.add(mycamera);
   //这个部分是顶部信息栏的
@@ -458,7 +421,7 @@ function createGUI(models){//用模型列表来生成gui 这个逻辑其实还�
     var player = document.createElement('p');
     player.id = `NO.${i}`;//排行第几个第几个 按道理应该是no1 但是我们是跟数组的 所以是0也没所谓
     if(i==0){
-      player.textContent = `you`;//这个也是暂时性的 但是游戏初始化的时候排在上面的就是自己
+      player.textContent = 'you';//这个也是暂时性的 但是游戏初始化的时候排在上面的就是自己
     }
     else{
       player.textContent = 'TBD:';//这里应该还有一个等待过程中 加入的时候获取的信息 到时候要写一个函数
@@ -466,7 +429,7 @@ function createGUI(models){//用模型列表来生成gui 这个逻辑其实还�
     rank.appendChild(player);
   }
   var rank_menu = new CSS2DObject( rank );
-  rank_menu.position.set(12,1,-10); 
+  rank_menu.position.set(10,1,-10); 
   mycamera.add(rank_menu);
   var total_hp = document.createElement('div');
   total_hp.id = 'total_hp_bar';
@@ -589,6 +552,7 @@ function updateGUI(){//这个迟早要优化的 目前还有一个创建gui房�
   
 
   for(let i = 0; i < severmsg.moneyrank.length;i++){
+    
     var thisplayer = document.getElementById(`NO.${i}`);//先找到这个元素
     if(severmsg.moneyrank[i].unique_id==result.unique_id){
       thisplayer.textContent = `you: ${severmsg.moneyrank[i].money}`;
@@ -597,12 +561,11 @@ function updateGUI(){//这个迟早要优化的 目前还有一个创建gui房�
       thisplayer.textContent = `${severmsg.moneyrank[i].player_name}: ${severmsg.moneyrank[i].money}`;
     }
   }
-
   var lefthp = document.getElementById('hp');
-  lefthp.textContent =`${severmsg.hp}/${severmsg.moneyrank.length*500} hp left`; //这里要改成服务器能用的
+  lefthp.textContent =`${severmsg.hp}/ 100 hp left`;  //这个后面是要改的
   lefthp.style.textAlign = 'center';
   var hpbar = document.getElementById('total_hp_bar');
-  hpbar.style.width = `${(severmsg.hp / (severmsg.moneyrank.length*500) * 100 | 0)*0.5}%`;
+  hpbar.style.width = `${(severmsg.hp / severmsg.hp * 100 | 0)*0.5}%`;
   var time_left = document.getElementById('timeleft');
   time_left.textContent = `${severmsg.time_left/1000} sec left` ;
 
@@ -674,3 +637,61 @@ function updateGUI(){//这个迟早要优化的 目前还有一个创建gui房�
 // 						hdrCubeMap.needsUpdate = true;
 
 // 					} );
+
+
+
+
+
+// ************* 这个部分不用看了 ************* //
+function loadmodel(){
+  for (const model of Object.values(models)) {
+    //这个写法不太好 有些异步加载的问题
+    // myMTLLoader.load(model.mtl_url,function(materials){
+    //   var thismaterials = materials;
+    //   myOBJLoader.setMaterials(thismaterials);
+    //   myOBJLoader.load(model.url,function(obj){
+    //     obj.name = model.name;
+    //     obj.children[0].geometry.computeBoundingBox();
+    //     obj.children[0].geometry.center();
+    //     obj.position.set(0,obj.children[0].geometry.boundingBox.max.y,0);
+    //     if(debug){
+    //     var helper = new THREE.BoxHelper(obj);
+    //     helper.update();
+    //     scene.add(helper);}
+    //     mygroup.add(obj);
+    //     // scene.add(mygroup);
+    //     console.log(obj);
+    //   })
+    // })
+    //这个写法不太好
+    new MTLLoader.MTLLoader( manager )
+    .load( model.mtl_url, function ( materials ) {
+      console.log(materials);
+      materials.preload();
+
+      new OBJLoader.OBJLoader( manager )
+        .setMaterials( materials )
+        .load( model.url, function ( obj ) {
+        console.log(obj);
+        obj.name = model.name;
+        obj.children[0].geometry.computeBoundingBox();
+        obj.children[0].geometry.center();
+        obj.position.set(0,obj.children[0].geometry.boundingBox.max.y,0);
+        mygroup.add(obj);
+        // scene.add(obj);
+        });
+
+    } );
+  }
+  // ************ 这里把scene换了就是了
+  for (const gltfmodel of Object.values(gltfmodels)) {//这里可能要一个一个加载?
+    new GLTFLoader.GLTFLoader(manager)
+    .load(gltfmodel.url,function(gltf){
+      scene.add( gltf.scene );
+      console.log(scene);
+      
+    });
+  }
+  // ************ 这里把scene换了就是了
+}
+// ************* 这个部分不用看了 ************* //

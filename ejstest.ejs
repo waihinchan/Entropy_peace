@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>gamepage</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/gamepage.css"> 
+    <style>
+    </style>
+</head>
+<body>
+    <!-- 完全不知道这个部分是干嘛的我忘记了 -->
+    <div class="unitmessage" id = 'for_clone' style="display: none;">
+        <div>
+            <p id = 'unit_name'>Facotry</p>
+            <img id = 'model_img' src="" alt="" width="80"  />
+        </div>
+            <div>
+                <p id = 'money'><img src="/asset/co2_icon.png" width="20" height="20" alt=""/>sometext</p>
+            </div>
+            <div>
+                <p id = 'co2'><img src="/asset/money_icon.png" alt="" width="20" height="20" />sometext</p>
+            </div>
+            <div>
+                <p id = 'price'>price <button class = 'create'>Build</button></p>
+            </div>
+        </div>  
+    <!-- 完全不知道这个部分是干嘛的我忘记了 -->
+    
+    <!-- 这里做一个进度条loading --> 
+    <div id="loading">
+      <div>
+        <div>...loading...</div>
+        <div class="progress"><div id="progressbar"></div></div>
+      </div>
+    </div>
+    <!-- 这里做一个进度条loading -->
+    <script>
+        var init_room_message = '<%- JSON.stringify(data) %>'
+        console.log(init_room_message);
+        var result = JSON.parse(init_room_message);
+        console.log(result);
+    </script>
+    <script type = 'module' src ='game_view.js'></script>
+
+</body>
+</html>
