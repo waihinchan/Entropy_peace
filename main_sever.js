@@ -6,7 +6,7 @@ const express = require('express');
 const app = express();
 const port = 3000;
 const server = app.listen(process.env.PORT || port,function(){
-    console.log('listen on req to port ' + process.env.PORT || port);
+    console.log('listen on req to port ' + port);
 });
 //—————————————————————————————————————————————————————————————— socket io part
 socketio = require('socket.io');

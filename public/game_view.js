@@ -153,7 +153,6 @@ socket.on('gamestatus',function(data){
     }, 1000);
     setTimeout(() => {//接收到gamestart之后 三秒后可以开始操作
       clearInterval(tempcd);//不用在计数了
-      // updateGUI();
       gamestart = true; //游戏开始的状态看看后面会影响什么
       GUI_interact(); //这个是GUI可以开始交互了
       currentgold = data.moneyrank[0].money;//这个现有金钱是来自于服务器给的 一开始大家都一样是直接从某一位数取
@@ -540,27 +539,34 @@ function collect_money(){//这个是一个按钮 按下去就可以收集金币 
   TBC_gold = 0;
   send_room_msg(caculate_room_msg());
 }
-function updateGUI(){//这个迟早要优化的 目前还有一个创建gui房间人数不一致导致多生成了标签的问题 等待到房间号加入后更新人数这个时候再改bug
+function updateGUI(){
+  //这个迟早要优化的 目前还有一个创建gui房间人数不一致导致多生成了标签的问题 等待到房间号加入后更新人数这个时候再改bug
   if(severmsg.hp>=0||severmsg.time_left>0){
 
   var msg_pergold = document.getElementById('pergold');
   var msg_collectgold = document.getElementById('collectgold');
   var msg_perpollution = document.getElementById('perpollution');
-  msg_perpollution.textContent = `${unit_pollution} pollution per sec`;
-  
-  msg_pergold.textContent = `${unit_production} production per sec`;
-  msg_collectgold.textContent = `collect${TBC_gold} gold`;
-  
-  
+  if(msg_perpollution != null){
+    msg_perpollution.textContent = `${unit_pollution} pollution per sec`;
 
+  }
+  if(msg_pergold != null){
+    msg_pergold.textContent = `${unit_production} production per sec`;
+  }
+  if(msg_collectgold != null){
+    msg_collectgold.textContent = `collect${TBC_gold} gold`;
+  }
+  
   for(let i = 0; i < severmsg.moneyrank.length;i++){
     
     var thisplayer = document.getElementById(`NO.${i}`);//先找到这个元素
-    if(severmsg.moneyrank[i].unique_id==result.unique_id){
-      thisplayer.textContent = `you: ${severmsg.moneyrank[i].money}`;
-    }
-    else{
-      thisplayer.textContent = `${severmsg.moneyrank[i].player_name}: ${severmsg.moneyrank[i].money}`;
+    if(thisplayer!=null){
+      if(severmsg.moneyrank[i].unique_id==result.unique_id){
+        thisplayer.textContent = `you: ${severmsg.moneyrank[i].money}`;
+      }
+      else{
+        thisplayer.textContent = `${severmsg.moneyrank[i].player_name}: ${severmsg.moneyrank[i].money}`;
+      }
     }
   }
   var lefthp = document.getElementById('hp');
