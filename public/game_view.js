@@ -258,7 +258,8 @@ function scene_init() {
   
   
 }
-
+// 现有的bug是..给模型给太慢了 没有回调 按道理服务器应该等所有人载入完毕后再发送游戏开始指令
+// 这也是经验吧但是以后也用不上
 
 class Factory extends THREE.Object3D{ //继承obj3d类
   static delete_unit(myid,self,emptypos) { //类静态方法
